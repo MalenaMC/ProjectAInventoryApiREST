@@ -1,4 +1,4 @@
-import nodeMailer from 'nodemailer'
+import nodeMailer from 'nodemailer';
 import  bcrypt  from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Request, Response, request, response } from 'express';
@@ -103,9 +103,9 @@ export const RecuperarCuenta = async (request: Request, response: Response) => {
         }
 
         //GENERACION DEL TOKEN ASOCIADO AL CORREO DEL USUARIO:
-        const token = jwt.sign({usuario: usuarioEncontrado.email}, 'hola_mundo', { expiresIn: '1h'})
+        const token = jwt.sign({usuario: usuarioEncontrado.email}, 'hola_mundo', { expiresIn: '1h' })
+
         const query = 'UPDATE users SET token_recuperacion =$1 WHERE email = $2';
-        
         await pool.query(query, [token, usuarioEncontrado.email]);
         
         console.log("Token guardado correctamente");
@@ -166,7 +166,7 @@ export const RecuperarCuenta = async (request: Request, response: Response) => {
 }
 
 
-//PARA RESTABLCER LA CONTRASEÑA Y ACTUALIZAR EN LA BASE DE DATOS
+//PARA RESTABLECER LA CONTRASEÑA Y ACTUALIZAR EN LA BASE DE DATOS
 export const RestablecerContrasena = async (request: Request, response: Response) => {
     const { password } = request.body;
     const tokenURL = request.query.token;
@@ -174,7 +174,7 @@ export const RestablecerContrasena = async (request: Request, response: Response
     try {
         const decodificarCorreo = jwt.verify(tokenURL, 'hola_mundo');
 
-        //"decodificarCorreo" ES UN ARREGLO, POR LO PASAMOS DE OTRA MANERA, COMO PARAMETRO EN LA CONSULTA SQL
+        //"decodificarCorreo" ES UN ARREGLO, ENTONCES LO PASAMOS DE OTRA MANERA, COMO PARAMETRO EN LA CONSULTA SQL
         const correoUsuarioExtraido = decodificarCorreo.usuario;
 
         const result = await pool.query(
