@@ -13,13 +13,17 @@ function appInit() {
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(bodyParser.json())
 
-    //Uso de un Usuario Ruta
+    //Uso de un Usuario y Producto Ruta
     app.use(UsuarioRuta);
     app.use(ProductoRuta);
+
+    //Configurar express para servir archivos estáticos desde la carpeta 'uploads'
+    app.use('/uploads', express.static('uploads'));
 
     //Que la aplicación solo escuche el puerto 3000
     app.listen(3000);
     console.log('Server running on port http://localhost:3000');
+
     pool.query("SELECT * FROM users",(error,results)=>{
         console.log("Se realizo la consulta de usuario correctamente");
     })
