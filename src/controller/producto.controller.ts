@@ -31,7 +31,8 @@ export const CrearProducto = async (request: Request, response: Response) => {
             code,
             name,
             price,
-            stock
+            stock,
+            details
         } = request.body;
         //OBTENER EL NOMBRE ORIGINAL DE LA IMAGEN PARA ALMACENARLA EN LA BASE DE DATOS.
         const imageOriginalName = request.file.originalname;
@@ -41,8 +42,8 @@ export const CrearProducto = async (request: Request, response: Response) => {
 
         try {
             const result = await pool.query(
-                'INSERT INTO products (code, name, price, stock, image) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-                [code, name, price, stock, imageOriginalName]
+                'INSERT INTO products (code, name, price, stock, details, image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                [code, name, price, stock, details, imageOriginalName]
             );
 
             const ProductoAgregado = result.rows[0];
