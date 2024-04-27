@@ -1,9 +1,10 @@
 import express from 'express';
-import { UsuarioRuta } from './routes/usuario.route';
 import bodyParser from 'body-parser';
 import pool from '../database.config';
 import cors from 'cors';
 import { ProductoRuta } from './routes/producto.route';
+import { UsuarioRuta } from './routes/usuario.route';
+import { LogisticaRuta } from './routes/logistica.route';
 
 function appInit() {
     //Inicializamos Init express
@@ -13,9 +14,10 @@ function appInit() {
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(bodyParser.json())
 
-    //Uso de un Usuario y Producto Ruta
+    //Uso de un Usuario, Producto y Logistica
     app.use(UsuarioRuta);
     app.use(ProductoRuta);
+    app.use(LogisticaRuta);
 
     //Configurar express para servir archivos estáticos desde la carpeta 'uploads'
     app.use('/uploads', express.static('uploads'));
@@ -29,6 +31,9 @@ function appInit() {
     })
     pool.query("SELECT * FROM products",(error,results)=>{
         console.log("Se realizo la consulta de producto correctamente");
+    })
+    pool.query("SELECT * FROM logs",(error,results)=>{
+        console.log("Se realizo la consulta de logistica correctamente");
     })
     
 }

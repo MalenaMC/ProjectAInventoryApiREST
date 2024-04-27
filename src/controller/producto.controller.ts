@@ -1,6 +1,7 @@
 import { Request, Response, request } from 'express';
 import pool from '../../database.config';
 import multer from 'multer';
+import path from 'path';
 
 const fs = require('node:fs');
 
@@ -15,8 +16,9 @@ const upload = multer({ storage: storage }).single('image');
 
 //PARA GUARDAR LA IMAGEN CON EL NOMBRE ORIGINAL
 function guardarImagen(file) {
-    const newPath = `./uploads/${file.originalname}`
-    fs.renameSync(file.path, newPath);
+    const ext = path.extname(file.originalname);
+    const newPath = `${file.filename}${ext}`
+    fs.renameSync(file.path, './uploads/' + newPath);
     //NEW PATH ES PRACTICAMENTE LA RUTA DE LA IMAGEN
     return newPath;
 }
@@ -34,8 +36,6 @@ export const CrearProducto = async (request: Request, response: Response) => {
             stock,
             details
         } = request.body;
-        //OBTENER EL NOMBRE ORIGINAL DE LA IMAGEN PARA ALMACENARLA EN LA BASE DE DATOS.
-        const imageOriginalName = request.file.originalname;
 
         //LLAMO A LA FUNCION DE GUARDAR IMAGEN NOMBRE ORIGINAL
         const newPath = guardarImagen(request.file);
@@ -43,7 +43,7 @@ export const CrearProducto = async (request: Request, response: Response) => {
         try {
             const result = await pool.query(
                 'INSERT INTO products (code, name, price, stock, details, image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                [code, name, price, stock, details, imageOriginalName]
+                [code, name, price, stock, details, newPath]
             );
 
             const ProductoAgregado = result.rows[0];
@@ -97,27 +97,6 @@ export const EliminarProducto = async (request: Request, response: Response) => 
     }
 };
 
-export const BuscarCodigoProducto = async (request: Request, response: Response) => {
-    const idProducto = request.params.id;
-    try {
-        const result = await pool.query(
-            'SELECT * FROM products WHERE codigo = $1',
-            [idProducto]
-        );
-
-        const usuarioEncontrado = result.rows[0];
-        if (!usuarioEncontrado) {
-            return response.status(404).json({ message: 'Error... Producto no encontrado' });
-        }
-
-        return response.status(200).json(usuarioEncontrado);
-    } 
-    catch (error) {
-        console.error('Error al buscar producto:', error);
-        return response.status(500).json({ message: 'Error interno del servidor' });
-    }
-}
-
 export const BuscarNombreProducto = async (request: Request, response: Response) => {
     const { nombre } = request.query;
 
@@ -135,3 +114,5 @@ export const BuscarNombreProducto = async (request: Request, response: Response)
         return response.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
+
